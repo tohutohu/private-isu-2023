@@ -21,8 +21,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/bradfitz/gomemcache/memcache"
-	gsm "github.com/bradleypeabody/gorilla-sessions-memcache"
 	"github.com/go-chi/chi/v5"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/sessions"
@@ -31,7 +29,7 @@ import (
 
 var (
 	db    *sqlx.DB
-	store *gsm.MemcacheStore
+	store sessions.Store
 )
 
 const (
@@ -87,12 +85,7 @@ type Comment struct {
 }
 
 func init() {
-	memdAddr := os.Getenv("ISUCONP_MEMCACHED_ADDRESS")
-	if memdAddr == "" {
-		memdAddr = "localhost:11211"
-	}
-	memcacheClient := memcache.New(memdAddr)
-	store = gsm.NewMemcacheStore(memcacheClient, "iscogram_", []byte("sendagaya"))
+	store = sessions.NewCookieStore([]byte("sendagaya"))
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 }
 
