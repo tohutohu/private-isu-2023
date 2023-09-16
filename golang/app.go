@@ -6,6 +6,7 @@ import (
 	"database/sql"
 	"encoding/hex"
 	"fmt"
+	"github.com/go-chi/chi/v5/middleware"
 	"html/template"
 	"io"
 	"io/ioutil"
@@ -924,6 +925,9 @@ func main() {
 	r.Get("/*", func(w http.ResponseWriter, r *http.Request) {
 		http.FileServer(http.Dir("../public")).ServeHTTP(w, r)
 	})
+
+	// add pprof
+	r.Mount("/debug", middleware.Profiler())
 
 	log.Fatal(http.ListenAndServe(":8080", r))
 }
