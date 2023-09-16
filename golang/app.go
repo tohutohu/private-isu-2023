@@ -82,12 +82,8 @@ type NullUser struct {
 }
 
 type Comment struct {
-	ID        int       `db:"id"`
-	PostID    int       `db:"post_id"`
-	UserID    int       `db:"user_id"`
-	Comment   string    `db:"comment"`
-	CreatedAt time.Time `db:"created_at"`
-	User      User
+	Comment    string
+	AuthorName string
 }
 
 func init() {
@@ -225,18 +221,8 @@ func makePosts(results []Post, csrfToken string) ([]Post, error) {
 
 		if p.Comment.ID.Valid {
 			p.Comments = append(p.Comments, Comment{
-				ID:        int(p.Comment.ID.Int64),
-				PostID:    int(p.Comment.PostID.Int64),
-				UserID:    int(p.Comment.UserID.Int64),
-				Comment:   p.Comment.Comment.String,
-				CreatedAt: p.Comment.CreatedAt.Time,
-				User: User{
-					ID:          int(p.Comment.User.ID.Int64),
-					AccountName: p.Comment.User.AccountName.String,
-					Authority:   int(p.Comment.User.Authority.Int64),
-					DelFlg:      int(p.Comment.User.DelFlg.Int64),
-					CreatedAt:   p.Comment.User.CreatedAt.Time,
-				},
+				Comment:    p.Comment.Comment.String,
+				AuthorName: p.Comment.User.AccountName.String,
 			})
 		}
 	}
