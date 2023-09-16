@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html/template"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -648,7 +649,7 @@ func postIndex(w http.ResponseWriter, r *http.Request) {
 		query,
 		me.ID,
 		mime,
-		filedata,
+		[]byte{},
 		r.FormValue("body"),
 	)
 	if err != nil {
@@ -662,7 +663,27 @@ func postIndex(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	filename := fmt.Sprintf("../image/%d.%s", pid, getExtension(mime))
+	err = ioutil.WriteFile(filename, filedata, 0644)
+	if err != nil {
+		log.Print("Could not write file: ", err)
+		return
+	}
+
 	http.Redirect(w, r, "/posts/"+strconv.FormatInt(pid, 10), http.StatusFound)
+}
+
+func getExtension(mime string) string {
+	switch mime {
+	case "image/jpeg":
+		return "jpg"
+	case "image/png":
+		return "png"
+	case "image/gif":
+		return "gif"
+	default:
+		return ""
+	}
 }
 
 func getImage(w http.ResponseWriter, r *http.Request) {
